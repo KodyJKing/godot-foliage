@@ -22,6 +22,7 @@ uniform sampler2D leafTexture;
 
 varying flat float sway;
 varying vec2 uvDistort;
+varying vec3 noiseTint;
 
 void vertex() {
 	bool is_shadow_pass = PROJECTION_MATRIX[3][2] == 0.0;
@@ -70,11 +71,11 @@ void fragment() {
 	float t = TIME * windSpeed;
 	vec3 wVert = (INV_VIEW_MATRIX * vec4(VERTEX, 1.)).xyz;
 	
-	vec2 uv = rotate(UV, sway); // + uvDistort;
-	uv.x += sin(t * 10.0 + VERTEX.x*2.) * .01;
-	uv.y += cos(t * 9.02 + VERTEX.y*2.) * .005;
-	uv.x += cos(t * 20.0 + VERTEX.x * 2.0) * .001;
-	uv.y += sin(t * 18.02 + VERTEX.y * 2.0) * .001;
+	vec2 uv = rotate(UV, sway) + uvDistort;
+	//uv.x += sin(t * 10.0 + VERTEX.x*2.) * .01;
+	//uv.y += cos(t * 9.02 + VERTEX.y*2.) * .005;
+	//uv.x += cos(t * 20.0 + VERTEX.x * 2.0) * .001;
+	//uv.y += sin(t * 18.02 + VERTEX.y * 2.0) * .001;
 	
 	uv = clamp(uv, vec2(0), vec2(1));
 	uv.y *= -1.0;
