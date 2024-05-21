@@ -1,0 +1,36 @@
+[gd_resource type="ShaderMaterial" load_steps=6 format=3 uid="uid://rq3l281gwng"]
+
+[ext_resource type="Shader" uid="uid://ctdd6nmhfaklp" path="res://materials/shaders/leavesx_shader.tres" id="1_glwcx"]
+[ext_resource type="Texture2D" uid="uid://dormmydwio6aj" path="res://materials/textures/leaf2.png" id="2_12h5b"]
+
+[sub_resource type="Gradient" id="Gradient_cee6u"]
+colors = PackedColorArray(0, 0, 0, 1, 1, 0, 0, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_ymxit"]
+fractal_type = 0
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_6weri"]
+seamless = true
+color_ramp = SubResource("Gradient_cee6u")
+noise = SubResource("FastNoiseLite_ymxit")
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_glwcx")
+shader_parameter/flipUVs = false
+shader_parameter/showUVs = false
+shader_parameter/effectLerp = 1.0
+shader_parameter/inheritScale = false
+shader_parameter/windSpeed = 1.0
+shader_parameter/swayAmplitude = 2.0
+shader_parameter/shadowTint = Color(0.00392157, 0.156863, 0.717647, 1)
+shader_parameter/fresnelTint = Color(0.466667, 1, 0.266667, 1)
+shader_parameter/fresnelIntensity = 1.0
+shader_parameter/fresnelExponent = 5.0
+shader_parameter/leafOffset = Vector2(0, 0.455)
+shader_parameter/leafScale = Vector2(1.18, 1)
+shader_parameter/colorNoiseIntensity = 0.1
+shader_parameter/colorNoiseScale = 1.0
+shader_parameter/_camera_transform = null
+shader_parameter/colorNoise = SubResource("NoiseTexture2D_6weri")
+shader_parameter/leafTexture = ExtResource("2_12h5b")

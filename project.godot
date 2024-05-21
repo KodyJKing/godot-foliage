@@ -11,5 +11,14 @@ config_version=5
 [application]
 
 config/name="foliage"
+run/main_scene="res://scenes/main_scene.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://icon.svg"
+
+[display]
+
+window/quality/msaa_3d=3
+
+[dotnet]
+
+project/assembly_name="foliage"

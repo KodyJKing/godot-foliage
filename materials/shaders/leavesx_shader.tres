@@ -1,0 +1,110 @@
+[gd_resource type="Shader" format=3 uid="uid://ctdd6nmhfaklp"]
+
+[resource]
+code = "shader_type spatial;
+render_mode blend_mix, diffuse_lambert, specular_schlick_ggx;
+
+uniform bool flipUVs = false;
+uniform bool showUVs = false;
+uniform float effectLerp = 1.0;
+uniform bool inheritScale = true;
+uniform float windSpeed = 1.0;
+uniform float swayAmplitude = 1.0;
+uniform vec3 shadowTint : source_color = vec3(.0, .0, .25);
+uniform vec3 fresnelTint : source_color = vec3(.408, 1., .467);
+uniform float fresnelIntensity = 1.0;
+uniform float fresnelExponent = 5.0;
+uniform vec2 leafOffset = vec2(-0.5, -0.5);
+uniform vec2 leafScale = vec2(1.0, 1.0);
+uniform float colorNoiseIntensity = 0.1;
+uniform float colorNoiseScale = 1.0;
+uniform sampler2D colorNoise;
+uniform sampler2D leafTexture;
+
+uniform mat4 _camera_transform;
+
+varying float sway;
+varying vec2 uvDistort;
+varying vec3 noiseTint;
+
+void vertex() {
+	bool is_shadow_pass = PROJECTION_MATRIX[3][2] == 0.0;
+	
+	// Faux-billboard
+	vec2 center_uv = (UV - .5) * leafScale + leafOffset;
+	if (flipUVs)
+		center_uv.x *= -1.0;
+	vec4 worldOffset = INV_VIEW_MATRIX * vec4(center_uv, 0.0, 0.0);
+	if (!inheritScale) {
+		float scaleX = length(MODEL_MATRIX[0].xyz);
+		float scaleY = length(MODEL_MATRIX[1].xyz);
+		float scaleZ = length(MODEL_MATRIX[2].xyz);
+		worldOffset.xyz /= vec3(scaleX, scaleY, scaleZ);
+	}
+	VERTEX += (inverse(MODEL_MATRIX) * worldOffset).xyz * effectLerp;
+	
+	// Update varyings for leaf animations.
+	float t = TIME * windSpeed;
+	vec3 viewVert = (MODELVIEW_MATRIX * vec4(VERTEX, 1.0)).xyz;
+	vec3 viewCam = (VIEW_MATRIX * vec4(CAMERA_POSITION_WORLD, 0.0)).xyz;
+	vec3 viewPos = viewVert + viewCam; // This prevents phase from changing as we pan the camera.
+	float phase = viewPos.x + viewPos.z;
+	sway = sin(t * 2.0 + phase) * .1 * swayAmplitude;
+	
+	uvDistort = vec2(0);
+	uvDistort.x += sin(t * 10.0 + viewPos.x*2.) * .01;
+	uvDistort.y += cos(t * 9.02 + viewPos.y*2.) * .005;
+	uvDistort.x += cos(t * 20.0 + viewPos.x * 2.0) * .001;
+	uvDistort.y += sin(t * 18.02 + viewPos.y * 2.0) * .001;
+}
+
+float fresnel(float amount, vec3 normal, vec3 view) {
+	return pow((1.0 - clamp(dot(normalize(normal), normalize(view)), 0.0, 1.0 )), amount);
+}
+
+vec2 rotate(vec2 v, float x) {
+	float c = cos(x);
+	float s = sin(x);
+	return vec2(
+		v.x * c + v.y * s,
+		-v.x * s + v.y * c
+	);
+}
+
+void fragment() {
+	bool is_shadow_pass = PROJECTION_MATRIX[3][2] == 0.0;
+	
+	float t = TIME * windSpeed;
+	vec3 wVert = (INV_VIEW_MATRIX * vec4(VERTEX, 1.)).xyz;
+	
+	vec2 uv = rotate(UV, sway) + uvDistort;
+	// uv.x += sin(t * 10.0 + VERTEX.x*2.) * .01;
+	// uv.y += cos(t * 9.02 + VERTEX.y*2.) * .005;
+	// uv.x += cos(t * 20.0 + VERTEX.x * 2.0) * .001;
+	// uv.y += sin(t * 18.02 + VERTEX.y * 2.0) * .001;
+	
+	uv = clamp(uv, vec2(0), vec2(1));
+	uv.y *= -1.0;
+	
+	vec4 sample = texture(leafTexture, uv);
+	ALBEDO = sample.xyz;
+
+	if (!is_shadow_pass) {
+		vec3 wNormal = (INV_VIEW_MATRIX * vec4(NORMAL, 0.)).xyz;
+		if (colorNoiseIntensity > 0.0) {
+			vec3 albedo2 = ALBEDO + texture(colorNoise, wVert.xz * 0.1 * colorNoiseScale).rgb;
+			ALBEDO = mix(ALBEDO, albedo2, colorNoiseIntensity);
+		}
+		ALBEDO += dot(wNormal, vec3(0., -1., 0.)) * shadowTint;
+		ROUGHNESS = 0.5;
+		float basic_fresnel = fresnel(fresnelExponent, NORMAL, VIEW);
+		ALBEDO += basic_fresnel * fresnelTint * fresnelIntensity;
+	}
+	
+	if (showUVs)
+		ALBEDO = vec3(UV, 0.0);
+	else if (sample.w < 0.9)
+		discard;		
+
+}
+"

@@ -1,0 +1,11 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://p5ev0vgftrnh"]
+
+[ext_resource type="Shader" path="res://materials/shaders/debugshader.gdshader" id="1_y8fum"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_y8fum")
+shader_parameter/showNormals = false
+shader_parameter/showUvs = true
+shader_parameter/explode = 0.1
+shader_parameter/uvExplode = 0.0

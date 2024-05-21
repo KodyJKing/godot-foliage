@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dormmydwio6aj"
-path.s3tc="res://.godot/imported/leaf2.png-8e43ee265ff51a7efcc29b37a649e2d5.s3tc.ctex"
+path.s3tc="res://.godot/imported/leaf2.png-7c8b50fe5a35ddb3e8c636e79140d945.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://leaf2.png"
-dest_files=["res://.godot/imported/leaf2.png-8e43ee265ff51a7efcc29b37a649e2d5.s3tc.ctex"]
+source_file="res://materials/textures/leaf2.png"
+dest_files=["res://.godot/imported/leaf2.png-7c8b50fe5a35ddb3e8c636e79140d945.s3tc.ctex"]
 
 [params]
 

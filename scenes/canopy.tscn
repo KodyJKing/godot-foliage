@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://dt0i41qpu355n"]
+
+[ext_resource type="PackedScene" uid="uid://b10a78o8f1vwh" path="res://models/Canopy.glb" id="1_dr6ik"]
+
+[node name="Canopy" instance=ExtResource("1_dr6ik")]
+
+[node name="mesh_003" parent="." index="0"]
+transparency = 0.25

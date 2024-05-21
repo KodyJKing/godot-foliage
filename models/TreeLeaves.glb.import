@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://bgi7chwlt4gan"
-path="res://.godot/imported/TreeLeaves.glb-0bf70c26da7690924c4572e88bff85f2.scn"
+path="res://.godot/imported/TreeLeaves.glb-0ecdd095ea648651aa182e1041f543d8.scn"
 
 [deps]
 
-source_file="res://TreeLeaves.glb"
-dest_files=["res://.godot/imported/TreeLeaves.glb-0bf70c26da7690924c4572e88bff85f2.scn"]
+source_file="res://models/TreeLeaves.glb"
+dest_files=["res://.godot/imported/TreeLeaves.glb-0ecdd095ea648651aa182e1041f543d8.scn"]
 
 [params]
 

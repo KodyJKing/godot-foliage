@@ -1,6 +1,12 @@
-[gd_scene load_steps=5 format=3 uid="uid://bu0veruwrk3la"]
+[gd_scene load_steps=20 format=3 uid="uid://bu0veruwrk3la"]
 
-[ext_resource type="Material" uid="uid://bhw23mpgygc0w" path="res://leaf_material.tres" id="1_f5iii"]
+[ext_resource type="Material" uid="uid://bhw23mpgygc0w" path="res://materials/leaf_material.tres" id="1_dena5"]
+[ext_resource type="PackedScene" uid="uid://b10a78o8f1vwh" path="res://models/Canopy.glb" id="2_xygul"]
+[ext_resource type="Script" path="res://scripts/gen_leaves.gd" id="3_25tht"]
+[ext_resource type="PackedScene" uid="uid://dtxmh27mr4a1g" path="res://models/Monkey.glb" id="4_gp2k7"]
+[ext_resource type="Shader" uid="uid://ctdd6nmhfaklp" path="res://materials/shaders/leavesx_shader.tres" id="5_pbik6"]
+[ext_resource type="Texture2D" uid="uid://dormmydwio6aj" path="res://materials/textures/leaf2.png" id="6_3jprr"]
+[ext_resource type="PackedScene" uid="uid://e8iwexrroox3" path="res://models/tree_4.glb" id="7_c5qiw"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kckmn"]
 resource_name = "Material1"
@@ -41,14 +47,119 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_8os3y")
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bpvec"]
+albedo_color = Color(0.364706, 0.423529, 0.0431373, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_g72pl"]
+material = SubResource("StandardMaterial3D_bpvec")
+size = Vector2(100, 100)
+
+[sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_tiqt7"]
+turbidity = 0.0
+
+[sub_resource type="Sky" id="Sky_aw4s8"]
+sky_material = SubResource("PhysicalSkyMaterial_tiqt7")
+
+[sub_resource type="Environment" id="Environment_wy0r1"]
+background_mode = 2
+sky = SubResource("Sky_aw4s8")
+sdfgi_enabled = true
+
+[sub_resource type="Gradient" id="Gradient_cee6u"]
+colors = PackedColorArray(0, 0, 0, 1, 1, 0, 0, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_ymxit"]
+fractal_type = 0
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_6weri"]
+seamless = true
+color_ramp = SubResource("Gradient_cee6u")
+noise = SubResource("FastNoiseLite_ymxit")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4bfbq"]
+render_priority = 0
+shader = ExtResource("5_pbik6")
+shader_parameter/flipUVs = false
+shader_parameter/showUVs = false
+shader_parameter/effectLerp = 1.0
+shader_parameter/inheritScale = false
+shader_parameter/windSpeed = 1.0
+shader_parameter/swayAmplitude = 2.0
+shader_parameter/shadowTint = Color(0.00392157, 0.156863, 0.717647, 1)
+shader_parameter/fresnelTint = Color(0.466667, 1, 0.266667, 1)
+shader_parameter/fresnelIntensity = 1.0
+shader_parameter/fresnelExponent = 5.0
+shader_parameter/leafOffset = Vector2(0, 0.45)
+shader_parameter/leafScale = Vector2(1, 1.205)
+shader_parameter/colorNoiseIntensity = 0.1
+shader_parameter/colorNoiseScale = 1.0
+shader_parameter/_camera_transform = null
+shader_parameter/colorNoise = SubResource("NoiseTexture2D_6weri")
+shader_parameter/leafTexture = ExtResource("6_3jprr")
+
 [node name="Node3D" type="Node3D"]
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0888072, 0)
-material_override = ExtResource("1_f5iii")
-mesh = SubResource("ArrayMesh_ib6vk")
+[node name="Leaves" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00514793, 0.549952, 0.000508308)
+visible = false
 
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
-transform = Transform3D(1.35, 0, 0, 0, 1.35, 0, 0, 0, 1.35, 0, 0.0888072, 0)
-material_override = ExtResource("1_f5iii")
+[node name="InnerMesh" type="MeshInstance3D" parent="Leaves"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0888072, 0)
+material_override = ExtResource("1_dena5")
 mesh = SubResource("ArrayMesh_ib6vk")
+skeleton = NodePath("../..")
+metadata/_edit_lock_ = true
+
+[node name="OuterMesh" type="MeshInstance3D" parent="Leaves"]
+transform = Transform3D(1.35, 0, 0, 0, 1.35, 0, 0, 0, 1.35, 0, 0.0888072, 0)
+material_override = ExtResource("1_dena5")
+mesh = SubResource("ArrayMesh_ib6vk")
+skeleton = NodePath("../..")
+metadata/_edit_lock_ = true
+
+[node name="Env" type="Node3D" parent="."]
+
+[node name="DirectionalLight3D_A" type="DirectionalLight3D" parent="Env"]
+transform = Transform3D(1, 0, 0, 0, 0.352658, 0.935752, 0, -0.935752, 0.352658, 0, 8.82634, 9.05424)
+light_energy = 3.0
+shadow_enabled = true
+shadow_blur = 0.48
+
+[node name="DirectionalLight3D_B" type="DirectionalLight3D" parent="Env"]
+transform = Transform3D(0.9703, -0.117957, 0.211197, -0.241905, -0.473134, 0.847128, 0, -0.873058, -0.487616, 2.86649, 19.7579, 9.97301)
+visible = false
+light_energy = 3.0
+shadow_enabled = true
+shadow_blur = 0.48
+
+[node name="Camera3D" type="Camera3D" parent="Env"]
+transform = Transform3D(-0.577911, -0.178346, 0.796374, -0.00963706, 0.977252, 0.21186, -0.816043, 0.114762, -0.566484, 5.91118, 3.22739, -1.3211)
+
+[node name="GroundMesh" type="MeshInstance3D" parent="Env"]
+mesh = SubResource("PlaneMesh_g72pl")
+skeleton = NodePath("../..")
+metadata/_edit_lock_ = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Env"]
+environment = SubResource("Environment_wy0r1")
+
+[node name="Canopy" parent="." instance=ExtResource("2_xygul")]
+transform = Transform3D(-0.585214, -0.112599, 0.803023, 0.111173, 0.969819, 0.217005, -0.803222, 0.216269, -0.555034, 0.694277, 0.504563, 2.46695)
+visible = false
+script = ExtResource("3_25tht")
+density = 15.0
+leaf_material = ExtResource("1_dena5")
+depth_bias = 0.1
+
+[node name="Monkey" parent="." instance=ExtResource("4_gp2k7")]
+transform = Transform3D(0.11724, -3.4146, 2.61912, 1.10828, 2.55567, 3.28227, -4.15824, 0.584883, 0.948658, 2.07091, 1.83817, 2.1912)
+script = ExtResource("3_25tht")
+density = 800.0
+leaf_material = SubResource("ShaderMaterial_4bfbq")
+depth_variation = 0.0
+depth_bias = 0.005
+use_bias_direction = true
+hide_original_meshes = false
+
+[node name="tree_4" parent="." instance=ExtResource("7_c5qiw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.7328, 0, 13.9179)
